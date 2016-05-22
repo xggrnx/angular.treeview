@@ -24,14 +24,16 @@
 
 (function ( angular ) {
 	'use strict';
-
-	angular.module( 'angularTreeview', [] ).directive( 'treeModel', ['$compile', function( $compile ) {
+	angular.module( 'angularTreeview', [] )
+	.directive( 'treeModel', ['$compile', function( $compile ) {
 		return {
 			restrict: 'A',
 			link: function ( scope, element, attrs ) {
+
+
 				//tree id
 				var treeId = attrs.treeId;
-			
+
 				//tree model
 				var treeModel = attrs.treeModel;
 
@@ -48,11 +50,13 @@
 				var template =
 					'<ul>' +
 						'<li data-ng-repeat="node in ' + treeModel + '">' +
-							'<i class="collapsed" data-ng-show="node.' + nodeChildren + '.length && node.collapsed" data-ng-click="' + treeId + '.selectNodeHead(node)"></i>' +
-							'<i class="expanded" data-ng-show="node.' + nodeChildren + '.length && !node.collapsed" data-ng-click="' + treeId + '.selectNodeHead(node)"></i>' +
-							'<i class="normal" data-ng-hide="node.' + nodeChildren + '.length"></i> ' +
-							'<span data-ng-class="node.selected" data-ng-click="' + treeId + '.selectNodeLabel(node)">{{node.' + nodeLabel + '}}</span>' +
-							'<div data-ng-hide="node.collapsed" data-tree-id="' + treeId + '" data-tree-model="node.' + nodeChildren + '" data-node-id=' + nodeId + ' data-node-label=' + nodeLabel + ' data-node-children=' + nodeChildren + '></div>' +
+							'<i class="collapsed fa fa-folder" data-ng-show="node.' + nodeChildren + '.length && node.collapsed" data-ng-click="' + treeId + '.selectNodeHead(node)"></i>' +
+							'<i class="expanded fa fa-folder-open" data-ng-show="node.' + nodeChildren + '.length && !node.collapsed" data-ng-click="' + treeId + '.selectNodeHead(node)"></i>' +
+							'<i class="normal | addIcons: node.type " data-ng-hide="node.' + nodeChildren + '.length"></i> ' +
+							'<span class="{{node.'+ nodeLabel +' | addIcons: node.type }}" data-ng-class="node.selected" data-ng-click="' +
+							treeId + '.selectNodeLabel(node)">&nbsp{{node.' + nodeLabel + '}}</span>' +
+							'<div data-ng-hide="node.collapsed" data-tree-id="' + treeId + '" data-tree-model="node.' + nodeChildren + '" data-node-id='
+								+ nodeId + ' data-node-label=' + nodeLabel + ' data-node-children=' + nodeChildren + '></div>' +
 						'</li>' +
 					'</ul>';
 
@@ -62,7 +66,7 @@
 
 					//root node
 					if( attrs.angularTreeview ) {
-					
+
 						//create tree object if not exists
 						scope[treeId] = scope[treeId] || {};
 
@@ -94,5 +98,38 @@
 				}
 			}
 		};
-	}]);
+	}])
+	.filter('addIcons', function(){
+		return function(o, type){
+			var iconsData = {
+				"html" : "fa fa-html5",
+				"css": "fa fa-css3",
+				"js": "fa fa-file-code-o",
+				"jpg": "fa fa-picture-o",
+				"png": "fa fa-picture-o",
+				"gif": "fa fa-picture-o",
+				"other": "fa fa-file-o"
+			};
+			if (type === undefined){
+				return iconsData[o.split('.')[o.split('.').length - 1].toLowerCase()];
+			}
+			else{
+				return "fa fa-folder";
+			}
+		};
+	})
+	.filter('addAction', function(){
+		return function(o, type){
+			var iconsData = {
+				"html" : "fa fa-html5",
+				"css": "fa fa-css3",
+				"js": "fa fa-file-code-o",
+				"jpg": "fa fa-picture-o",
+				"png": "fa fa-picture-o",
+				"gif": "fa fa-picture-o",
+				"other": "fa fa-file-o"
+			};
+			return '<i class="fa fa-download" aria-hidden="true"></i>'
+		};
+	})	;
 })( angular );
